@@ -54,24 +54,20 @@ namespace REST.Controllers
 
         // POST api/<PlayersController>
         [HttpPost]
-        public void Post([FromBody] Player value)
+        public int Post([FromBody] Player value)
         {
+            value.Id = _nextId++;
             players.Add(value);
+            return value.Id;
         }
 
         // PUT api/<PlayersController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] Player value)
+        public void Put(int id, [FromBody] string value)
         {
-            Player p = Get(id);
-            if(p!= null)
-            {
-                p.Id = value.Id;
-                p.Name = value.Name;
-                p.Position = value.Position;
-                p.Team = value.Team;
-                p.Value = p.Value;
-            }
+             int index = players.FindIndex(value => value.Id == id);
+             if (index > 0) { }
+
         }
 
         // DELETE api/<PlayersController>/5
@@ -83,6 +79,27 @@ namespace REST.Controllers
             {
                 players.Remove(p);
             }
+        }
+        /// <summary>
+        /// Her indtaster du en string som finder alle items der indeholder bogstavet
+        /// </summary>
+        /// <param name="substring"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("Team/{substring}")]
+        public IEnumerable<Player> GetFromTeam(string substring)
+        {
+            var list = players.FindAll(i => i.Team.ToLower().Contains(substring.ToLower()));
+            return list;
+
+        }
+        [HttpGet]
+        [Route("Name/{substring}")]
+        public IEnumerable<Player> GetFromName(string substring)
+        {
+            var list = players.FindAll(i => i.Name.ToLower().Contains(substring.ToLower()));
+            return list;
+
         }
     }
 }
